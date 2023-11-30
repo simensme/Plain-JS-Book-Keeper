@@ -99,6 +99,7 @@ a:active {
     bottom: 0;
 }
 
+/* Because this is below it will override the .modal-container */
 .show-modal {
     display: flex;
     justify-content: center;
