@@ -6,6 +6,8 @@ const websiteNameEl = document.getElementById('website-name');
 const websiteUrlEl = document.getElementById('website-url');
 const bookmarksContainer = document.getElementById('bookmarks-container');
 
+let bookmarks = [];
+
 // Show Modal, Focus on the first input in the modal
 const showModal = () => {
     modal.classList.add('show-modal');
@@ -39,6 +41,24 @@ const validate = (nameValue, urlValue) => {
     return true;
 };
 
+// Fetch bookmarks
+const fetchBookmarks = () => {
+    // Get bookmarks from local storage if they are available
+    if (localStorage.getItem('bookmarks')){
+        bookmarks = JSON.parse(localStorage.getItem('bookmarks'))
+    } else {
+        // Create a bookmarks array in local storage
+        bookmarks = [
+            {
+                name: 'Simen',
+                url: 'https://kefir.com'
+            }
+        ];
+        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    }
+    console.log(bookmarks);
+}
+
 // Handle data from form
 const storeBookmark = e => {
     // Prevent it from submitting a form to a web-server
@@ -51,10 +71,21 @@ const storeBookmark = e => {
     if(!validate(nameValue, urlValue)){
         return false;
     } 
+    const bookmark = {
+        name: nameValue,
+        url: urlValue
+    };
+    bookmarks.push(bookmark);
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    fetchBookmarks();
+    bookmarkForm.reset();
+    websiteNameEl.focus();
 };
 
 // Event Listener
 bookmarkForm.addEventListener('submit', storeBookmark);
 
+// On load, fetch bookmarks
+fetchBookmarks();
 
 
