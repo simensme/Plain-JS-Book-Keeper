@@ -8,6 +8,7 @@ const bookmarksContainer = document.getElementById('bookmarks-container');
 
 let bookmarks = [];
 
+
 // Show Modal, Focus on the first input in the modal
 const showModal = () => {
     modal.classList.add('show-modal');
@@ -41,6 +42,52 @@ const validate = (nameValue, urlValue) => {
     return true;
 };
 
+// Deleting a bookmark
+const deleteBookmark = url => {
+    bookmarks.forEach((bm, i) => {
+        if (bm.url === url) {
+            bookmarks.splice(i, 1);
+        } 
+    });
+    // Update bookmarks array in localStorage, re-populate the DOM
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    fetchBookmarks();
+};
+
+// Build bookmarks function - populating the DOM
+const buildBookmarks = () => {
+    // Remove all bookmark elements
+    bookmarksContainer.textContent = '';
+    // Build items
+    bookmarks.forEach(bm => {
+        const {name, url} = bm;
+        // Item
+        const item = document.createElement('div');
+        item.classList.add('item');
+        // close Icon
+        const closeIcon = document.createElement('i');
+        closeIcon.classList.add('fas', 'fa-times');
+        closeIcon.setAttribute('title', 'Delete Bookmark');
+        closeIcon.setAttribute('onclick', `deleteBookmark('${url}')`);
+        // Favicon, link container
+        const linkInfo = document.createElement('div');
+        linkInfo.classList.add('name');
+        // Favicon
+        const favicon = document.createElement('img');
+        favicon.setAttribute('src', `https://s2.googleusercontent.com/s2/favicons?domain=${url}`);
+        favicon.setAttribute('alt', 'Favicon');
+        // Link
+        const link = document.createElement('a');
+        link.setAttribute('href', `${url}`);
+        link.setAttribute('target', '_blank');
+        link.textContent = name;
+        // Appending the above to the bookmarks container
+        linkInfo.append(favicon, link);
+        item.append(closeIcon, linkInfo);
+        bookmarksContainer.appendChild(item);
+    });
+};
+
 // Fetch bookmarks
 const fetchBookmarks = () => {
     // Get bookmarks from local storage if they are available
@@ -56,8 +103,8 @@ const fetchBookmarks = () => {
         ];
         localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
     }
-    console.log(bookmarks);
-}
+    buildBookmarks();
+};
 
 // Handle data from form
 const storeBookmark = e => {
